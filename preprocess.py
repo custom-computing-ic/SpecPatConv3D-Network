@@ -7,7 +7,6 @@ from helper import *
 #For fix point arithmetic
 from decimal import *
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default='Indian_pines', help='default:Indian_pines, options: Salinas, KSC, Botswana')
 parser.add_argument('--patch_size', type=int, default=5, help='Feature size, odd number integer')
@@ -216,8 +215,6 @@ if opt.plot:
     # Show transposed statlie image (reflection along x=y asix)
     target_mat = np.array(target_mat)
     print(target_mat.dtype)
-
     print(target_mat.shape)
-
     GroundTruthVisualise(target_mat, opt.data)
 

@@ -1,2 +1,2 @@
-model_checkpoint_path: "/mnt/ccnas2/bdp/swc3918/IGARSS2019/Trained_model/"
-all_model_checkpoint_paths: "/mnt/ccnas2/bdp/swc3918/IGARSS2019/Trained_model/"
+model_checkpoint_path: "the3dnetwork-Indian_pines"
+all_model_checkpoint_paths: "the3dnetwork-Indian_pines"

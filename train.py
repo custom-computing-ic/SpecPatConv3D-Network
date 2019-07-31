@@ -166,7 +166,7 @@ def main(opt):
         # Dropout probability for the model
         prob = tf.placeholder(tf.float32)
 
-        # BASS-net model definition
+        # Network model definition
         model = net(img_entry, prob, HEIGHT, WIDTH, CHANNELS, N_PARALLEL_BAND, NUM_CLASS)
 
         # Cost Function
@@ -202,7 +202,7 @@ def main(opt):
             '''
             session.run(tf.global_variables_initializer())
 
-            def test(t_data, t_label, test_iterations=1):
+            def test(t_data, t_label, test_iterations=1, evalate=False):
 
                 assert test_data.shape[0] == test_label.shape[0]
 
@@ -259,6 +259,7 @@ def main(opt):
                         if maxValidRate < acc:
                             location = i
                             maxValidRate = acc
+                            saver.save(session, './Trained_model/the3dnetwork-'+opt.data)
                         print('Maximum validation accuracy: ', acc, ' at epoch ', location)
                         test(validation_data, validation_label, 1)
 
@@ -275,7 +276,7 @@ def main(opt):
             count_param()
             # Train model
             train(num_iterations=EPOCHS, train_batch_size=BATCH)
-            saver.save(session, model_directory)
+            #saver.save(session, model_directory)
 
             # Test model
             test(test_data, test_label, test_iterations=1)

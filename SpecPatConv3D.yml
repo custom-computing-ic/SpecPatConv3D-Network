@@ -1,0 +1,13 @@
+name: SpecPatConv
+channels:
+  - defaults
+dependencies:
+  - python=3.7
+  - numpy
+  - scipy
+  - tqdm
+  - matplotlib
+  - tensorflow
+  - scikit-learn
+  - wget
+  - pandas
