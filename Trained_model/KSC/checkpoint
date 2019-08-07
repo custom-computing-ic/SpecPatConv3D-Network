@@ -1,0 +1,2 @@
+model_checkpoint_path: "the3dnetwork-KSC"
+all_model_checkpoint_paths: "the3dnetwork-KSC"
