@@ -3,8 +3,7 @@ from argparse import ArgumentParser
 from model import *
 import tensorflow as tf
 import numpy as np
-from helper import showClassTable, maybeExtract, maybeDownloadOrExtract, GroundTruthVisualise
-from helper import get_available_gpus
+from helper import showClassTable, maybeExtract
 import os
 
 from tqdm import tqdm
@@ -12,7 +11,7 @@ from tqdm import tqdm
 number_of_band = {'Indian_pines': 2, 'Salinas': 2, 'KSC': 2, 'Botswana': 1}
 
 # get_available_gpus()
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0,1'
 
 # GPU_DEVICE_IDX = '1'
 model_directory = os.path.join(os.getcwd(), 'Trained_model/')
@@ -23,108 +22,6 @@ parser.add_argument('--epoch', type=int, default=650, help='Epochs')
 parser.add_argument('--batch_size', type=int, default=50, help='Mini batch at training')
 parser.add_argument('--patch_size', type=int, default=5)
 parser.add_argument('--device', type=str, default='CPU')
-
-
-# os.environ["CUDA_VISIBLE_DEVICES"] = '0,1'
-
-def net(statlieImg, prob, HEIGHT, WIDTH, CHANNELS, N_PARALLEL_BAND, NUM_CLASS):
-    # A dictionary expect to contain graph nodes
-    # Arguement: Image place holder, Dropout probability,
-
-    sequence = {}
-    sequence['input'] = tf.reshape(statlieImg, [-1, HEIGHT, WIDTH, CHANNELS])
-
-    # Block 1 Conv1 layer
-    with tf.variable_scope('conv1'):
-        layer = sequence['input']
-        layer = create_conv_2dlayer(input=layer,
-                                    filter_size=1,
-                                    num_output_channel=CHANNELS,
-                                    relu=True,
-                                    padding='valid')
-        sequence['conv1'] = layer
-    # Tensor shape = N * 5 * 5 * 220
-
-    with tf.variable_scope('parallelProcess'):
-        layer = sequence['conv1']
-
-        with tf.variable_scope('reshape3d'):
-            layer = tf.reshape(layer, [-1, HEIGHT, WIDTH, CHANNELS, 1])
-
-        with tf.variable_scope('split'):
-            layer = tf.split(layer, num_or_size_splits=N_PARALLEL_BAND, axis=3)
-
-        with tf.variable_scope('segmentation', reuse=tf.AUTO_REUSE):  # Enable parameter sharing
-
-            for index, l in enumerate(layer):
-                with tf.variable_scope('layer1'):
-                    layer1 = create_conv_3dlayer(input=l,
-                                                 filter_width=2,
-                                                 filter_height=2,
-                                                 filter_depth=9,
-                                                 stride=2,
-                                                 num_output_channels=1,
-                                                 relu=True)
-
-                with tf.variable_scope('layer2'):
-                    layer2 = create_conv_3dlayer(input=layer1,
-                                                 filter_width=3,
-                                                 filter_height=3,
-                                                 filter_depth=5,
-                                                 stride=1,
-                                                 num_output_channels=3,
-                                                 relu=True)
-
-                with tf.variable_scope('layer3'):
-                    layer3 = create_conv_3dlayer(input=layer2,
-                                                 filter_width=2,
-                                                 filter_height=2,
-                                                 filter_depth=3,
-                                                 stride=2,
-                                                 num_output_channels=6,
-                                                 relu=True)
-
-                with tf.variable_scope('layer4'):
-                    layer4 = create_conv_3dlayer(input=layer3,
-                                                 filter_width=1,
-                                                 filter_height=1,
-                                                 filter_depth=3,
-                                                 stride=1,
-                                                 num_output_channels=10,
-                                                 relu=True)
-
-                layer5, _ = flatten_layer(layer4)
-
-                if not index:
-                    stack = tf.concat([layer5], axis=1)
-                else:
-                    stack = tf.concat([stack, layer5], axis=1)
-
-        sequence['parallel_end'] = stack
-
-    with tf.variable_scope('dense1'):
-        layer = sequence['parallel_end']
-        layer, number_features = flatten_layer(layer)
-        layer = fully_connected_layer(input=layer,
-                                      num_inputs=number_features,
-                                      num_outputs=120,
-                                      activation='relu')
-        layer = tf.nn.dropout(x=layer, keep_prob=prob)
-        sequence['dense1'] = layer
-
-    with tf.variable_scope('dense3'):
-        layer = sequence['dense1']
-        layer = fully_connected_layer(input=layer,
-                                      num_inputs=120,
-                                      num_outputs=NUM_CLASS)
-        sequence['dense3'] = layer
-
-    y_predict = tf.nn.softmax(sequence['dense3'])
-    sequence['class_prediction'] = y_predict
-    sequence['predict_class_number'] = tf.argmax(y_predict, axis=1)
-
-    return sequence
-
 
 def main(opt):
 
@@ -192,14 +89,6 @@ def main(opt):
         saver = tf.train.Saver()
         with tf.Session(graph=graph) as session:
 
-            # Uncomment the below line to view the TensorBoard
-            '''
-            writer = tf.summary.FileWriter("Network-logs/", session.graph)
-            '''
-            '''
-            if os.path.isdir(model_directory):
-                saver.restore(session, 'Trained_model/')
-            '''
             session.run(tf.global_variables_initializer())
 
             def test(t_data, t_label, test_iterations=1, evalate=False):
@@ -259,7 +148,7 @@ def main(opt):
                         if maxValidRate < acc:
                             location = i
                             maxValidRate = acc
-                            saver.save(session, './Trained_model/the3dnetwork-'+opt.data)
+                            saver.save(session, './Trained_model/' + str(opt.data) +'/the3dnetwork-'+opt.data)
                         print('Maximum validation accuracy: ', acc, ' at epoch ', location)
                         test(validation_data, validation_label, 1)
 

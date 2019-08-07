@@ -184,7 +184,7 @@ def plot_random_spec_img(pic, true_label):
     plt.show()
 
 
-def GroundTruthVisualise(data, dataset):
+def GroundTruthVisualise(data, dataset, original=True):
     from matplotlib.pyplot import imshow, show, colorbar, set_cmap, clim
     import matplotlib.pyplot as plt
     import numpy as np
@@ -192,9 +192,11 @@ def GroundTruthVisualise(data, dataset):
     labels = []
 
     if dataset == 'Indian_pines':
-        
-        labels = ['Unlabelled','Corn-notil', 'Corn-mintill','Corn', 'Grass-pasture','Grass-trees','Hay-windrowed','Soybean-notil','Soybean-mintil','Soybean-clean','Woods','BGTD']
-    
+        if original:
+            labels = ['Unlabelled','Corn-notil', 'Corn-mintill','Corn', 'Grass-pasture','Grass-trees','Hay-windrowed','Soybean-notil','Soybean-mintil','Soybean-clean','Woods','BGTD']
+        else:
+            labels = []
+
     elif dataset == 'Salinas':        
         labels = ['Unlabelled', 'Brocoli green weeds 1', 'Brocoli green weeds 2', 'Fallow', 'Fallow rough plow', 'Fallow smooth', 'Stubble', 'Celery','Grapes untrained', 'Soil vinyard develop', 'Corn senesced green weeds', 'Lettuce romaine 4wk', 'Lettuce romaine 5wk', 'Lettuce romaine 6wk', 'Lettuce romaine 7wk', 'Vinyard untrained', 'Vunyard vertical trellis']
 
@@ -212,11 +214,8 @@ def GroundTruthVisualise(data, dataset):
         cax.ax.set_yticklabels(labels)
 
     imshow(data)
-    
     discrete_matshow(data)
-
     show()
-
 
 # Arguement: data = 3D image in size (h,w,bands)
 def plotStatlieImage(data, bird=False):
@@ -254,7 +253,7 @@ def get_available_gpus():
     if len(a) > 2:
         a = a
     else:
-        a = a
+        a = None
 
     return len(a), a 
 

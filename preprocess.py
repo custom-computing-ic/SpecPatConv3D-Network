@@ -4,15 +4,12 @@ import scipy.io as io
 import argparse
 from helper import *
 
-#For fix point arithmetic
-from decimal import *
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default='Indian_pines', help='default:Indian_pines, options: Salinas, KSC, Botswana')
 parser.add_argument('--patch_size', type=int, default=5, help='Feature size, odd number integer')
 parser.add_argument('--train_ratio', type=float, default=0.1, help='Fraction for training from data')
-parser.add_argument('--validation_ratio', type=float, default=0.05, help='Fraction for validation from data')
-parser.add_argument('--dtype', type=str, default='float32', help='Data type (Eg float64, float32, float16, int64...')
+parser.add_argument('--validation_ratio', type=float, default=0.1, help='Fraction for validation from data')
+parser.add_argument('--dtype', type=str, default='float16', help='Data type (Eg float64, float32, float16, int64...')
 parser.add_argument('--plot', type=bool, default=False, help='Set TRUE for visualizing the statlie images and ground truth')
 opt = parser.parse_args()
 
@@ -29,7 +26,7 @@ BAND = input_mat.shape[2]
 OUTPUT_CLASSES = np.max(target_mat)
 
 # Normalize image data and select datatype
-input_mat = input_mat.astype(np.float64)
+input_mat = input_mat.astype(np.float16)
 input_mat = input_mat - np.min(input_mat)
 input_mat = input_mat / np.max(input_mat)
 
@@ -49,9 +46,9 @@ for i in range(BAND):
     new_input_mat.append(np.pad(input_mat[:,:, i], calib_val_pad, 'constant', constant_values=0))
 
 new_input_mat = np.transpose(new_input_mat, (1, 2, 0))
-
-print("+-------------------------------------+")
 input_mat = new_input_mat
+print("+-------------------------------------+")
+
 
 def Patch(height_index, width_index):
 
