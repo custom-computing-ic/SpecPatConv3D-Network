@@ -7,7 +7,7 @@ This is an implementation code for <a href="https://arxiv.org/abs/1906.11981">Co
  
 If you have any question related to the paper or the code, feel free to contact Ringo Chu (ringo.chu.16@ucl.ac.uk)
  
-<img src="http://www.doc.ic.ac.uk/~swc3918/img/arch8.png" width="95%"><br>
+<img src="http://www.doc.ic.ac.uk/~swc3918/img/arch6.png" width="95%"><br>
 
 This is a neural network architecture using 3D Convolutional neural network with partitioning on \lamba dimension to classify unlabelled pixel on Hyperspectral images,
  and achieving the state-of-art performance on classification with labelled dataset on Indian Pines, Salinas scenes.
