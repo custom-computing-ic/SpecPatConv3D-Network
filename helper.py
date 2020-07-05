@@ -205,6 +205,7 @@ def GroundTruthVisualise(data, dataset, original=True):
 
     def discrete_matshow(data):
         #get discrete colormap
+        data = data.astype(np.int64)
         cmap = plt.get_cmap('tab20', np.max(data)-np.min(data)+1)
         # set limits .5 outside true range
         mat = plt.matshow(data, cmap=cmap, vmin=np.min(data)-0.5, vmax=np.max(data)+0.5)
